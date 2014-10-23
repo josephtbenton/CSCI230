@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSci 230: Assignment 8</title>
+<meta http-equiv="Expires" content="Tuesday, 02-Jun-1998 14:24:26 GMT" />
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+<link rel="shortcut icon" href="../../img/cs230.ico" />
+</head>
+
+<body>
+
+<div class="header">
+<a class="hendrix" href="http://www.hendrix.edu"><img width="32" height="32"
+   src="http://ozark.hendrix.edu/~burch/cs/img/hendrix-logo-32x32.png" align="right" border="0"></a>
+<img align="left" src="../../img/comp.png" width="35" height="35" alt="" />
+<div class="name"><a href="http://www.cburch.com/cs/230/index.html"><i class="number">CSci 230:</i>
+	Computing Systems Organization</a><br /></div>
+<div class="links"><small>
+<a href="http://ozark.hendrix.edu"/>Computer Science</a>
+<br /><a href="http://www.hendrix.edu">Hendrix College</a>
+</small></div>
+<span class="tabs"><a class="tab" href="http://www.cburch.com/cs/230/index.html">Home</a>
+<a class="tab" href="../../syllabus.html">Syllabus</a>
+<a class="tab" href="../../reading/index.html">Readings</a>
+<b><a class="tab" href="../index.html">Assignments</a></b>
+<a class="tab" href="../../test/index.html">Tests</a>
+</span>
+<br clear="all" /><hr />
+</div><div class="contents">
+
+<h1>Assignment 8: MINIAC</h1>
+
+<p><em><b>Due:</b> 5:00pm, Friday, October 24.
+<b>Value:</b> 45 pts.</em></p>
+
+<p>Using Logisim, design a circuit implementing the MINIAC
+computer described below, using
+<tt><a href="miniac.circ">miniac.circ</a></tt>
+as your starting point.
+[<a href="miniac.circ">Link</a>]
+(To download, you may need to right-click the link and select
+&ldquo;Save Link As&hellip;&rdquo;.)
+You may use any built-in Logisim components in completing this
+assignment.</p>
+
+<p>The MINIAC instruction set was designed for the purpose of this
+assignment.  It uses two one-byte registers, known as PC (program
+counter) and AC (accumulator).  It includes a program memory containing
+256 bytes implemented as read-only memory (ROM), and it has a data
+memory containing 32 bytes implemented as random-access memory
+(RAM).</p>
+
+<p>Every MINIAC instruction is encoded in one byte:
+The top three bits give the operation to be performed,
+and the bottom five bits are an argument supporting the operation.
+Each of the three-bit combinations is tabulated below.</p>
+
+<table><tbody>
+<tr><td><b>000</b><em>xxxxx</em>&nbsp;&nbsp;</td>
+	<td nowrap="nowrap"><tt>BZ</tt> <em>x</em>&nbsp;&nbsp;</td>
+	<td nowrap="nowrap"><b>B</b>ranch if <b>Z</b>ero</td><td width="100%"></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	if AC = 0 then PC &larr; PC + signed(<em>x</em>) else PC
+	&larr; PC + 1</td></tr>
+<tr><td><b>001</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>BN</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>B</b>ranch if <b>N</b>egative</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	if AC &lt; 0 then PC &larr; PC + signed(<em>x</em>) else PC
+	&larr; PC + 1</td></tr>
+<tr><td><b>010</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>ST</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>ST</b>ore</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	RAM[<em>x</em>] &larr; AC; PC &larr; PC + 1</td></tr>
+<tr><td><b>011</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>RL</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>R</b>otate <b>L</b>eft</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	AC &larr; AC rotated left by distance given in lower 3 bits of
+	<em>x</em>; PC &larr; PC + 1</td></tr>
+<tr><td><b>100</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>LI</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>L</b>oad <b>I</b>mmediate</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	AC &larr; signed(<em>x</em>); PC &larr; PC + 1</td></tr>
+<tr><td><b>101</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>LM</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>L</b>oad from <b>M</b>emory</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	AC &larr; RAM[<em>x</em>]; PC &larr; PC + 1</td></tr>
+<tr><td><b>110</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>AD</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>AD</b>d</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	AC &larr; AC + RAM[<em>x</em>]; PC &larr; PC + 1</td></tr>
+<tr><td><b>111</b><em>xxxxx</em></td><td nowrap="nowrap"><tt>SB</tt> <em>x</em></td>
+	<td nowrap="nowrap"><b>S</b>u<b>B</b>tract</td><td></td></tr>
+<tr><td colspan="4" style="padding-left: 3em">
+	AC &larr; AC &minus; RAM[<em>x</em>]; PC &larr; PC + 1</td></tr>
+</tbody></table>
+
+<!--
+<p>Here is an example program fragment that takes a value
+<var>n</var> from RAM[1] and places
+<var>n</var>&nbsp;/&nbsp;2 into RAM[0].
+This is essentially the code found in the
+&ldquo;Halves a number&rdquo; example on the
+<a href="miniac.html">MINIAC assembler page</a>.</p>
+
+<blockquote><table><thead>
+<tr><th>hex</th><th>binary</th><th>assembly</th><th>comment</th></tr>
+</thead><tbody>
+<tr><td>0xA1&nbsp;</td><td>101&nbsp;00001&nbsp;</td><td><tt>LM&nbsp;1</tt></td>
+	<td><em># Load number to be halved,</em></td></tr>
+<tr><td>0x67</td><td>011&nbsp;00111</td><td><tt>RL&nbsp;7</tt></td>
+	<td><em># rotate it right once,</em></td></tr>
+<tr><td>0x40</td><td>010&nbsp;00000</td><td><tt>ST&nbsp;0</tt></td>
+	<td><em># and store result.</em></td></tr>
+<tr><td>0x23</td><td>001&nbsp;00011</td><td><tt>BN&nbsp;3</tt></td>
+	<td><em># Go to (b) if top bit is 1 (1's bit before rotation)</em></td></tr>
+<tr><td>0x80</td><td>100&nbsp;00000</td><td><tt>LI&nbsp;0</tt></td>
+	<td><em># Stop computer.</em></td></tr>
+<tr><td>0x00</td><td>000&nbsp;00000</td><td><tt>BZ&nbsp;0</tt></td>
+	<td></td></tr>
+<tr><td>0x81</td><td>100&nbsp;00001</td><td><tt>LI&nbsp;1</tt></td>
+	<td><em># (b): Set AC to 0x80.</em></td></tr>
+<tr><td>0x67</td><td>011&nbsp;00111</td><td><tt>RL&nbsp;7</tt></td>
+	<td></td></tr>
+<tr><td>0xC0</td><td>110&nbsp;00000</td><td><tt>AD&nbsp;0</tt></td>
+	<td><em># Add 0x80 to result to clear top bit.</em></td></tr>
+<tr><td>0x40</td><td>010&nbsp;00000</td><td><tt>ST&nbsp;0</tt></td>
+	<td></td></tr>
+<tr><td>0x80</td><td>100&nbsp;00000</td><td><tt>LI&nbsp;0</tt></td>
+	<td><em># Stop computer.</em></td></tr>
+<tr><td>0x00</td><td>000&nbsp;00000</td><td><tt>BZ&nbsp;0</tt></td>
+	<td></td></tr>
+</tbody></table></blockquote>
+-->
+
+<h2>How to test your circuit</h2>
+
+<p>The <a href="miniac.html">MINIAC assembler</a> Web page
+[<a href="miniac.html">Link</a>]
+includes a variety of sample programs that you might use for testing your
+circuit. Or you can write your own.
+To use the page, enter your own program at top or select one of
+several included programs from the drop-down menu at top,
+then click the &ldquo;Assemble&rdquo; button.</p>
+
+<p>If the program contains errors preventing assembly, then 
+it will describe the errors below the program entry area.
+But if the program is valid, the page will display the MINIAC registers
+and memory below the program entry area,
+and you can then execute the program by
+repeatedly clicking the &ldquo;Step&rdquo; button,
+or you can watch it step through the program using &ldquo;Run&rdquo;.</p>
+
+<p>Also on successful assembly, a text area will appear below
+the simulation area, containing text starting with
+&ldquo;v2.0&nbsp;raw&rdquo;.
+This text area contains the machine code in a file format
+that Logisim accepts for its ROM circuits.
+To try loading the machine code into your own circuit,
+you first need to save this text into an ASCII file:
+Select <em>all</em> the text in the box (including &ldquo;v2.0
+raw&rdquo;), copy it to the clipboard, paste it
+into your favorite text editor (on the
+Linux machines I recommend <em>gedit</em>), and save it into an ASCII file.
+Then go to your circuit in Logisim,
+right-click (or control-click) the ROM, select &ldquo;Load
+Image&hellip;&rdquo;, and select the name of the ASCII file
+you created.  You will then want to start the clock ticking,
+either manually by clicking the clock component repeatedly or by
+selecting &ldquo;Enable Ticks&rdquo; from the Simulate menu.</p>
+
+</div></body></html>
